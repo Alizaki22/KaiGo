@@ -4,12 +4,12 @@ const pool = require('../config/db');
 
 const rideModel = {
   // Create a new ride request from a user
-  create: async ({ userId, pickupAddress, dropoffAddress }) => {
+  create: async ({ userId, pickupAddress, pickupLat, pickupLng, dropoffAddress }) => {
     const result = await pool.query(
-      `INSERT INTO rides (user_id, pickup_address, dropoff_address, status)
-       VALUES ($1, $2, $3, 'requested')
+      `INSERT INTO rides (user_id, pickup_address, pickup_lat, pickup_lng, dropoff_address, status)
+       VALUES ($1, $2, $3, $4, $5, 'requested')
        RETURNING *`,
-      [userId, pickupAddress, dropoffAddress]
+      [userId, pickupAddress, pickupLat, pickupLng, dropoffAddress]
     );
     return result.rows[0];
   },

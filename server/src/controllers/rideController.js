@@ -1,6 +1,7 @@
 // src/controllers/rideController.js
 // Handles ride lifecycle from the USER's perspective
 const rideModel   = require('../models/rideModel');
+const driverModel = require('../models/driverModel');
 const { AppError } = require('../middleware/errorHandler');
 const { validationResult } = require('express-validator');
 
@@ -12,25 +13,72 @@ const calculateFare = (durationMinutes) => {
   return parseFloat((BASE_FARE + RATE_PER_MINUTE * durationMinutes).toFixed(2));
 };
 
+// Haversine formula to calculate distance between two points in km
+const getDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; // Earth's radius in km
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
+
 // POST /api/rides — User requests a new ride
 const requestRide = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ success: false, errors: errors.array() });
     }
 
-    const { pickupAddress, dropoffAddress } = req.body;
+    const { pickupAddress, pickupLat, pickupLng, dropoffAddress } = req.body;
 
-    const ride = await rideModel.create({
+    // 1. Create the ride request
+    let ride = await rideModel.create({
       userId: req.user.id,
       pickupAddress,
+      pickupLat,
+      pickupLng,
       dropoffAddress,
     });
 
+    // 2. Fetch online drivers
+    const availableDrivers = await driverModel.getAvailableDrivers();
+
+    if (availableDrivers.length > 0) {
+      // 3. Find the nearest driver
+      let nearestDriver = null;
+      let minDistance = Infinity;
+
+      availableDrivers.forEach(driver => {
+        if (driver.latitude && driver.longitude) {
+          const dist = getDistance(pickupLat, pickupLng, driver.latitude, driver.longitude);
+          if (dist < minDistance) {
+            minDistance = dist;
+            nearestDriver = driver;
+          }
+        }
+      });
+
+      // 4. Assign driver if found within a reasonable range (e.g., 10km)
+      if (nearestDriver && minDistance < 10) {
+        ride = await rideModel.updateStatus(ride.id, 'assigned', {
+          driverId: nearestDriver.id
+        });
+
+        // Mark driver as unavailable (assigned)
+        await driverModel.setAvailability(nearestDriver.id, false);
+      }
+    }
+
     res.status(201).json({
       success: true,
-      message: 'Ride requested! Looking for a driver...',
+      message: ride.status === 'assigned' 
+        ? 'Driver assigned! They are on their way.' 
+        : 'Ride requested! Looking for a driver...',
       ride,
     });
   } catch (err) {

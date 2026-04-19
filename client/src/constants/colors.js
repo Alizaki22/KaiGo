@@ -33,6 +33,7 @@ const colors = {
   // Status badge colors
   statusColors: {
     requested:   { bg: '#1D3461', text: '#60A5FA' },
+    assigned:    { bg: '#1E3A5F', text: '#38BDF8' },
     accepted:    { bg: '#1B3A4B', text: '#34D399' },
     in_progress: { bg: '#2D1B69', text: '#A78BFA' },
     completed:   { bg: '#064E3B', text: '#6EE7B7' },

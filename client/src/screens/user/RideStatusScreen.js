@@ -10,7 +10,7 @@ import Button       from '../../components/Button';
 import StatusBadge  from '../../components/StatusBadge';
 import colors       from '../../constants/colors';
 
-const STEPS = ['requested', 'accepted', 'in_progress', 'completed'];
+const STEPS = ['requested', 'assigned', 'accepted', 'in_progress', 'completed'];
 
 const RideStatusScreen = ({ route, navigation }) => {
   const { rideId } = route.params;

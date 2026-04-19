@@ -36,9 +36,12 @@ const HomeScreen = ({ navigation }) => {
     if (!validate()) return;
     setLoading(true);
     try {
-      const data = await api.post('/rides', {
+      // Sending dummy coordinates for now as maps are not yet integrated
+      const data = await api.post('/rides/request', {
         pickupAddress:  pickup.trim(),
         dropoffAddress: dropoff.trim(),
+        pickupLat:      37.7749, // Dummy San Francisco lat
+        pickupLng:     -122.4194, // Dummy San Francisco lng
       });
       // Navigate to the ride status screen
       navigation.navigate('RideStatus', { rideId: data.ride.id });

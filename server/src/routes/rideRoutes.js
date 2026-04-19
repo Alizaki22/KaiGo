@@ -18,6 +18,8 @@ router.use(auth);
 // Alias: POST /api/rides (both accepted)  |  Users only
 const rideValidators = [
   body('pickupAddress').trim().notEmpty().withMessage('Pickup address is required.'),
+  body('pickupLat').isNumeric().withMessage('Pickup latitude must be a number.'),
+  body('pickupLng').isNumeric().withMessage('Pickup longitude must be a number.'),
   body('dropoffAddress').trim().notEmpty().withMessage('Dropoff address is required.'),
 ];
 

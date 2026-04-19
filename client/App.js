@@ -6,8 +6,8 @@ import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 
 import { AuthProvider, useAuth } from './src/context/AuthContext';
-import AuthNavigator   from './src/navigation/AuthNavigator';
-import UserNavigator   from './src/navigation/UserNavigator';
+import AuthNavigator from './src/navigation/AuthNavigator';
+import UserNavigator from './src/navigation/UserNavigator';
 import DriverNavigator from './src/navigation/DriverNavigator';
 import colors from './src/constants/colors';
 
@@ -25,7 +25,7 @@ const RootNavigator = () => {
   }
 
   if (!isLoggedIn) return <AuthNavigator />;
-  if (isDriver)    return <DriverNavigator />;
+  if (isDriver) return <DriverNavigator />;
   return <UserNavigator />;
 };
 
@@ -36,11 +36,11 @@ export default function App() {
         theme={{
           dark: true,
           colors: {
-            primary:      colors.primary,
-            background:   colors.bg,
-            card:         colors.bgCard,
-            text:         colors.textPrimary,
-            border:       colors.border,
+            primary: colors.primary,
+            background: colors.bg,
+            card: colors.bgCard,
+            text: colors.textPrimary,
+            border: colors.border,
             notification: colors.primary,
           },
         }}
@@ -54,9 +54,10 @@ export default function App() {
 
 const styles = StyleSheet.create({
   loading: {
-    flex:            1,
-    justifyContent:  'center',
-    alignItems:      'center',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: colors.bg,
   },
 });
+

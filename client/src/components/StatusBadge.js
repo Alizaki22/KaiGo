@@ -6,6 +6,7 @@ import colors from '../constants/colors';
 
 const LABELS = {
   requested:   '🔍 Looking for Driver',
+  assigned:    '📍 Driver Assigned',
   accepted:    '✅ Driver Accepted',
   in_progress: '🚗 In Progress',
   completed:   '🏁 Completed',
